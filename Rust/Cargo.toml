@@ -1,0 +1,17 @@
+[package]
+name = "dot_product"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+
+[dev-dependencies]
+criterion = {version = "0.3", features = ["html_reports"]}
+
+[[bench]]
+name = "single_thread_1"
+harness = false
+
+[[bench]]
+name = "single_thread_2"
+harness = false
