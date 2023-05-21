@@ -12,7 +12,7 @@ The `Makefile` provide the following commands, which can be run with `make`:
 
 ## To do
 
-* Multi-threaded Rust implementation + benchmark
+* Multi-threaded Rust implementation using Rayon + benchmark
 * Single-threaded C++ implementation + benchmark
 * Multi-threaded C++ implementation + benchmark
 * Cuda implementation + benchmark

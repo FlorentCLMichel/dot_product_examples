@@ -6,7 +6,7 @@ use crate::Number;
 ///
 /// * `x`: left input array
 /// * `y`: right input array
-/// * `n`: umber of elements in each array
+/// * `n`: number of elements in each array
 ///
 /// # Example
 ///

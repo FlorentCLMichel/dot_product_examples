@@ -15,3 +15,7 @@ harness = false
 [[bench]]
 name = "single_thread_2"
 harness = false
+
+[[bench]]
+name = "multi_thread_1"
+harness = false

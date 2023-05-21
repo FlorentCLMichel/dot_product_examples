@@ -1,7 +1,7 @@
 use std::ops::{AddAssign, Add, Mul};
 use std::convert::From;
 
-pub trait Number : AddAssign + Add<Output=Self> + Mul<Output=Self> + From<u8> + Copy {}
+pub trait Number : AddAssign + Add<Output=Self> + Mul<Output=Self> + From<u8> + Copy + Send + Sync {}
 
 impl Number for i16 {}
 impl Number for i32 {}
