@@ -10,6 +10,8 @@ The `Makefile` provide the following commands, which can be run with `make`:
 * **`rust_benchs`**: run the Rust benchmarks
 * **`rust_clippy`**: run the Clippy linter on the Rust code
 * **`rust_doc`**: generate documentation for the Rust code
+* **`zig_build`**: build the Zig benchmarks
+* **`zig_run`**: build and run the Zig benchmarks
 * **`clean`**: delete temporary files
 
 ## To do
