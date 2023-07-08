@@ -12,11 +12,12 @@ The `Makefile` provide the following commands, which can be run with `make`:
 * **`rust_doc`**: generate documentation for the Rust code
 * **`zig_build`**: build the Zig benchmarks
 * **`zig_run`**: build and run the Zig benchmarks
+* **`cpp_build`**: build the C++ benchmarks
+* **`cpp_run`**: build and run the C++ benchmarks
 * **`clean`**: delete temporary files
 
 ## To do
 
-* Single-threaded C++ implementation + benchmark
 * Multi-threaded C++ implementation + benchmark
 * Cuda implementation + benchmark
 * Verilog implementation and Verilator tests
