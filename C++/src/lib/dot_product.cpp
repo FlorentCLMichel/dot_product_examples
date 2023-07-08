@@ -1,6 +1,7 @@
 #include "dot_product.h"
 #include <thread>
 #include <mutex>
+#include <omp.h>
 
 
 template<BasicArithmetic T, size_t N>
@@ -60,9 +61,23 @@ T dot_product_2(const std::vector<T>& a, const std::vector<T>& b) {
 }
 
 
+template<BasicArithmetic T, size_t N>
+T dot_product_3(const std::span<const T, N> a, const std::span<const T, N> b) {
+    T c = static_cast<T>(0);
+    #pragma omp parallel for \
+        schedule(static) \
+        reduction(+:c)
+    for (size_t i = 0; i < N; i++) {
+        c += a[i] * b[i];
+    }
+    return c;
+}
+
+
 // template instantiations
 #define INSTANCIATE_1(T,N) \
-    template T dot_product_1(const std::span<const T, N>, const std::span<const T, N>);
+    template T dot_product_1(const std::span<const T, N>, const std::span<const T, N>); \
+    template T dot_product_3(const std::span<const T, N>, const std::span<const T, N>);
 #define INSTANCIATE_2(T,N,N_THREADS) \
     template T dot_product_2<T,N,N_THREADS>(const std::vector<T>&, const std::vector<T>&);
 
@@ -70,7 +85,6 @@ INSTANCIATE_1(DOT_PRODUCT_INT_TYPE, DOT_PRODUCT_SIZE)
 
 #ifdef DOT_PRODUCT_N_THREADS
 #if DOT_PRODUCT_N_THREADS != 1
-INSTANCIATE_1(DOT_PRODUCT_INT_TYPE, DOT_PRODUCT_SIZE / DOT_PRODUCT_N_THREADS)
 INSTANCIATE_2(DOT_PRODUCT_INT_TYPE, DOT_PRODUCT_SIZE, DOT_PRODUCT_N_THREADS)
 #endif
 #endif

@@ -20,7 +20,9 @@ cpp_build:
 	cd C++ && mkdir -p build && cd build && cmake .. && make
 
 cpp_benchs: cpp_build
-	cd C++/build && ./bench_1 && ./bench_2 && ./bench_1 && ./bench_2
+	cd C++/build \
+		&& ./bench_1 && ./bench_2 && ./bench_3 \
+		&& ./bench_1 && ./bench_2 && ./bench_3
 
 clean: 
 	rm -rf Rust/target

@@ -2,7 +2,7 @@ project(dot_product_cpp)
 cmake_minimum_required(VERSION 3.22)
 
 set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_FLAGS "-Wall -Wextra -O2")
+set(CMAKE_CXX_FLAGS "-Wall -Wextra -O2 -fopenmp")
 include_directories(src/include)
 set(sources
     src/lib/dot_product.cpp)
@@ -18,4 +18,10 @@ target_compile_options(bench_2 PUBLIC
     "-DDOT_PRODUCT_INT_TYPE=int" 
     "-DDOT_PRODUCT_SIZE=1000000"
     "-DDOT_PRODUCT_N_THREADS=4" 
+)
+
+add_executable(bench_3 ${sources} bench/bench_3.cpp)
+target_compile_options(bench_3 PUBLIC 
+    "-DDOT_PRODUCT_INT_TYPE=int" 
+    "-DDOT_PRODUCT_SIZE=1000000"
 )
