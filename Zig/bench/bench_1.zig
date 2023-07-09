@@ -36,5 +36,5 @@ pub fn main() !void {
         i += 1;
     }
     const end = std.time.nanoTimestamp();
-    std.debug.print("PASSED in {d}ns on average ({d} iterations)\n", .{ @divExact(end - start, N_ITER), N_ITER });
+    std.debug.print("PASSED in {d}μs on average ({d} iterations)\n", .{ @divExact(end - start, N_ITER * 1000), N_ITER });
 }
