@@ -85,7 +85,7 @@ pub fn dot_prod_1<T: Number + 'static>(x: Arc<Vec<T>>, y: Arc<Vec<T>>, n: usize,
 ///
 /// ```
 /// use dot_product::*;
-/// use dot_product::single_thread::*;
+/// use dot_product::multi_thread::*;
 ///
 /// let n: usize = 4;
 /// let x = vec![1, 2, 3, 4];
@@ -98,5 +98,33 @@ pub fn dot_prod_2<T: Number>(x: &[T], y: &[T]) -> T
 {
     x.par_iter().zip(y.par_iter())
      .fold(|| <u8 as Into<T>>::into(0), |acc, (&e, &f)| acc + e * f)
+     .sum::<T>()
+}
+
+
+/// A multi-threaded dot product function using iterators
+///
+/// # Arguments
+///
+/// * `x`: left input array
+/// * `y`: right input array
+///
+/// # Example
+///
+/// ```
+/// use dot_product::*;
+/// use dot_product::multi_thread::*;
+///
+/// let n: usize = 4;
+/// let x = vec![1, 2, 3, 4];
+/// let y = vec![1, 2, 1, 2];
+/// let z = dot_prod_3(&x, &y);
+///
+/// assert_eq!(16, z);
+/// ```
+pub fn dot_prod_3<T: Number>(x: &[T], y: &[T]) -> T
+{
+    x.par_iter().zip(y.par_iter())
+     .map(|(&e, &f)| e * f)
      .sum::<T>()
 }

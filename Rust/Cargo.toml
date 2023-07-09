@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-rayon = {version="1"}
+rayon = {version = "1"}
 
 [dev-dependencies]
 criterion = {version = "0.3", features = ["html_reports"]}
@@ -18,9 +18,17 @@ name = "single_thread_2"
 harness = false
 
 [[bench]]
+name = "single_thread_3"
+harness = false
+
+[[bench]]
 name = "multi_thread_1"
 harness = false
 
 [[bench]]
 name = "multi_thread_2"
+harness = false
+
+[[bench]]
+name = "multi_thread_3"
 harness = false

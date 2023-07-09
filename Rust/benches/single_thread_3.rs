@@ -1,5 +1,5 @@
 use criterion::{criterion_group, criterion_main, Criterion};
-use dot_product::multi_thread::*;
+use dot_product::single_thread::*;
     
 const N: usize = 1000000; // number of elements
 
@@ -12,10 +12,12 @@ fn criterion_benchmark(c: &mut Criterion)
 
     // compute the dot product
     let mut z: i32 = 0;
-    c.bench_function("dot_roduct_multi_thread_2", |b| b.iter(|| z = dot_prod_2(&x, &y)));
+    unsafe {
+        c.bench_function("dot_roduct_single_thread_1", |b| b.iter(|| z = dot_prod_3(&x, &y, N)));
 
-    // check the result
-    assert_eq!(-500000, z);
+        // check the result
+        assert_eq!(-500000, z);
+    }
 }
 
 criterion_group!(benches, criterion_benchmark);

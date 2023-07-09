@@ -24,9 +24,13 @@ cpp_benchs: cpp_build
 		&& ./bench_1 && ./bench_2 && ./bench_3 \
 		&& ./bench_1 && ./bench_2 && ./bench_3
 
+python: 
+	cd Python && python3 ./benchs.py
+
 clean: 
 	rm -rf Rust/target
 	rm -f Rust/Cargo.lock
 	rm -rf Zig/zig-cache
 	rm -rf Zig/zig-out
 	rm -rf C++/build
+	rm -rf Python/__pycache__

@@ -14,6 +14,7 @@ The `Makefile` provide the following commands, which can be run with `make`:
 * **`zig_run`**: build and run the Zig benchmarks
 * **`cpp_build`**: build the C++ benchmarks
 * **`cpp_run`**: build and run the C++ benchmarks
+* **`python`**: run the Python benchmarks
 * **`clean`**: delete temporary files
 
 ## To do
