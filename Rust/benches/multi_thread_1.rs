@@ -16,7 +16,7 @@ fn criterion_benchmark(c: &mut Criterion)
     let x = Arc::new(x);
     let y = Arc::new(y);
     let mut z: i32 = 0;
-    c.bench_function("dot_roduct_multi_thread_1", |b| b.iter(|| z = dot_prod_1(x.clone(), y.clone(), N, L)));
+    c.bench_function("dot_product_multi_thread_1", |b| b.iter(|| z = dot_prod_1(x.clone(), y.clone(), N, L)));
 
     // check the result
     assert_eq!(-500000, z);
