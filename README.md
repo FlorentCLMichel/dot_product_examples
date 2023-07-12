@@ -2,7 +2,7 @@ A few simple implementations of integer dot product functions.
 
 ## Make commands
 
-The `Makefile` provide the following commands, which can be run with `make`: 
+The `Makefile` provides the following commands, which can be run with `make`: 
 
 * **`rust_tests`**: run the Rust unit tests
 * **`rust_benchs`**: run the Rust benchmarks
