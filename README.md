@@ -1,10 +1,8 @@
 A few simple implementations of integer dot product functions.
 
-**NB:** The multi-threaded CPU implementations are provided as illustrations only. THe dor product is typically a memory-bound operation, and thus generally does not benefit from parralelism on CPUs. (More presisely, the computation speed is generally limited by the number of elements which can be fetched from memory simultaneously.)
-
 ## Make commands
 
-The `Makefile` provide the following commands, which can be run with `make`: 
+The `Makefile` provides the following commands, which can be run with `make`: 
 
 * **`rust_tests`**: run the Rust unit tests
 * **`rust_benchs`**: run the Rust benchmarks

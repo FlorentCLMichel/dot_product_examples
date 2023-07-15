@@ -13,7 +13,7 @@ fn criterion_benchmark(c: &mut Criterion)
     // compute the dot product
     let mut z: i32 = 0;
     unsafe {
-        c.bench_function("dot_roduct_single_thread_1", |b| b.iter(|| z = dot_prod_3(&x, &y, N)));
+        c.bench_function("dot_product_single_thread_1", |b| b.iter(|| z = dot_prod_3(&x, &y, N)));
 
         // check the result
         assert_eq!(-500000, z);
