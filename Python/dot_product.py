@@ -1,5 +1,6 @@
 import numpy as np
 import numba
+import cupy as cp
 
 def dot_product_1(a, b): 
     return (a * b).sum()
