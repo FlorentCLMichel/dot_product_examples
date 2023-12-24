@@ -25,8 +25,16 @@ T dot_product_1(const std::span<const T, N> a, const std::span<const T, N> b);
 template<BasicArithmetic T, size_t N, size_t N_THREADS, size_t N_PER_THREAD = N / N_THREADS>
 T dot_product_2(const std::vector<T>& a, const std::vector<T>& b);
 
-// A simple single-threaded dot product function using OpenMP
+// A simple multi-threaded dot product function using OpenMP
 template<BasicArithmetic T, size_t N>
 T dot_product_3(const std::span<const T, N> a, const std::span<const T, N> b);
+
+// A simple multi-threaded dot product function using OpenMP
+template<BasicArithmetic T, size_t N>
+T dot_product_4(const std::span<const T, N> a, const std::span<const T, N> b);
+
+// A simple simgle-threaded dot product function using OpenMP
+template<BasicArithmetic T, size_t N>
+T dot_product_5(const std::span<const T, N> a, const std::span<const T, N> b);
 
 #endif

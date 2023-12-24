@@ -28,3 +28,17 @@ target_compile_options(bench_3 PUBLIC
     "-DDOT_PRODUCT_SIZE=1000000"
     "-O3"
 )
+
+add_executable(bench_4 ${sources} bench/bench_4.cpp)
+target_compile_options(bench_4 PUBLIC 
+    "-DDOT_PRODUCT_INT_TYPE=int" 
+    "-DDOT_PRODUCT_SIZE=1000000"
+    "-O3"
+)
+
+add_executable(bench_5 ${sources} bench/bench_5.cpp)
+target_compile_options(bench_5 PUBLIC 
+    "-DDOT_PRODUCT_INT_TYPE=int" 
+    "-DDOT_PRODUCT_SIZE=1000000"
+    "-O3"
+)

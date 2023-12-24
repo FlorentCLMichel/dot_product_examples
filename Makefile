@@ -21,8 +21,8 @@ cpp_build:
 
 cpp_benchs: cpp_build
 	cd C++/build \
-		&& ./bench_1 && ./bench_2 && ./bench_3 \
-		&& ./bench_1 && ./bench_2 && ./bench_3
+		&& ./bench_1 && ./bench_2 && ./bench_3 && ./bench_4 && ./bench_5 \
+		&& ./bench_1 && ./bench_2 && ./bench_3 && ./bench_4 && ./bench_5
 
 python: 
 	cd Python && python3 ./benchs.py
