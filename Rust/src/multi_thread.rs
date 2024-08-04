@@ -128,3 +128,32 @@ pub fn dot_prod_3<T: Number>(x: &[T], y: &[T]) -> T
      .map(|(&e, &f)| e * f)
      .sum::<T>()
 }
+
+/// A multi-threaded dot product function using `par_chunk`
+///
+/// # Arguments
+///
+/// * `x`: left input array
+/// * `y`: right input array
+///
+/// # Example
+///
+/// ```
+/// use dot_product::*;
+/// use dot_product::multi_thread::*;
+///
+/// let n: usize = 4;
+/// let x = vec![1, 2, 3, 4];
+/// let y = vec![1, 2, 1, 2];
+/// let z = dot_prod_4(&x, &y);
+///
+/// assert_eq!(16, z);
+/// ```
+pub fn dot_prod_4<T: Number, const N: usize>(x: &[T], y: &[T]) -> T
+{
+    x.par_chunks(N).zip(y.par_chunks(N))
+     .map(|(e, f)| {
+     	    e.iter().zip(f.iter()).map(|(&a, &b)| a * b).sum::<T>()
+     })
+     .sum::<T>()
+}

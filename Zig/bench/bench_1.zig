@@ -22,8 +22,8 @@ pub fn main() !void {
     defer allocator.free(y);
     i = 0;
     while (i < N) {
-        x[i] = @intCast(i32, i);
-        y[i] = 1 - 2 * @intCast(i32, i % 2);
+        x[i] = @intCast(i);
+        y[i] = 1 - 2 * @as(i32, @intCast(i % 2));
         i += 1;
     }
 
@@ -31,10 +31,10 @@ pub fn main() !void {
     i = 0;
     while (i < N_ITER) {
         // Compute the dot product
-        var z: i32 = dp.dot_product_1(i32, N, x, y);
+        const z: i32 = dp.dot_product_1(i32, N, x, y);
         try expect(z == -500000);
         i += 1;
     }
     const end = std.time.nanoTimestamp();
-    std.debug.print("PASSED in {d}μs on average ({d} iterations)\n", .{ @divExact(end - start, N_ITER * 1000), N_ITER });
+    std.debug.print("PASSED in {d}μs on average ({d} iterations)\n", .{ @divFloor(end - start, N_ITER * 1000), N_ITER });
 }

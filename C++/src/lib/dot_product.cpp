@@ -74,10 +74,36 @@ T dot_product_3(const std::span<const T, N> a, const std::span<const T, N> b) {
 }
 
 
+template<BasicArithmetic T, size_t N>
+T dot_product_4(const std::span<const T, N> a, const std::span<const T, N> b) {
+    T c = static_cast<T>(0);
+    #pragma omp parallel for simd \
+        schedule(static) \
+        reduction(+:c)
+    for (size_t i = 0; i < N; i++) {
+        c += a[i] * b[i];
+    }
+    return c;
+}
+
+
+template<BasicArithmetic T, size_t N>
+T dot_product_5(const std::span<const T, N> a, const std::span<const T, N> b) {
+    T c = static_cast<T>(0);
+    #pragma omp simd
+    for (size_t i = 0; i < N; i++) {
+        c += a[i] * b[i];
+    }
+    return c;
+}
+
+
 // template instantiations
 #define INSTANCIATE_1(T,N) \
     template T dot_product_1(const std::span<const T, N>, const std::span<const T, N>); \
-    template T dot_product_3(const std::span<const T, N>, const std::span<const T, N>);
+    template T dot_product_3(const std::span<const T, N>, const std::span<const T, N>); \
+    template T dot_product_4(const std::span<const T, N>, const std::span<const T, N>); \
+    template T dot_product_5(const std::span<const T, N>, const std::span<const T, N>);
 #define INSTANCIATE_2(T,N,N_THREADS) \
     template T dot_product_2<T,N,N_THREADS>(const std::vector<T>&, const std::vector<T>&);
 

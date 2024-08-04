@@ -11,7 +11,7 @@ rust_doc:
 	cd Rust && cargo doc --offline
 
 zig_build:
-	cd Zig && zig build -Drelease-fast
+	cd Zig && zig build --release
 
 zig_run: zig_build
 	cd Zig && ./zig-out/bin/bench_1
@@ -21,8 +21,8 @@ cpp_build:
 
 cpp_benchs: cpp_build
 	cd C++/build \
-		&& ./bench_1 && ./bench_2 && ./bench_3 \
-		&& ./bench_1 && ./bench_2 && ./bench_3
+		&& ./bench_1 && ./bench_2 && ./bench_3 && ./bench_4 && ./bench_5 \
+		&& ./bench_1 && ./bench_2 && ./bench_3 && ./bench_4 && ./bench_5
 
 python: 
 	cd Python && python3 ./benchs.py
@@ -30,7 +30,7 @@ python:
 clean: 
 	rm -rf Rust/target
 	rm -f Rust/Cargo.lock
-	rm -rf Zig/zig-cache
+	rm -rf Zig/.zig-cache
 	rm -rf Zig/zig-out
 	rm -rf C++/build
 	rm -rf Python/__pycache__
