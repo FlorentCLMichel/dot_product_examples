@@ -11,7 +11,7 @@ rust_doc:
 	cd Rust && cargo doc --offline
 
 zig_build:
-	cd Zig && zig build --release
+	cd Zig && zig build --release=fast
 
 zig_run: zig_build
 	cd Zig && ./zig-out/bin/bench_1

@@ -27,7 +27,7 @@ pub fn main() !void {
         i += 1;
     }
 
-    const start = std.time.nanoTimestamp();
+    const start1 = std.time.nanoTimestamp();
     i = 0;
     while (i < N_ITER) {
         // Compute the dot product
@@ -35,6 +35,17 @@ pub fn main() !void {
         try expect(z == -500000);
         i += 1;
     }
-    const end = std.time.nanoTimestamp();
-    std.debug.print("PASSED in {d}μs on average ({d} iterations)\n", .{ @divFloor(end - start, N_ITER * 1000), N_ITER });
+    const end1 = std.time.nanoTimestamp();
+    std.debug.print("dot_product_1: PASSED in {d}μs on average ({d} iterations)\n", .{ @divFloor(end1 - start1, N_ITER * 1000), N_ITER });
+    
+    const start2 = std.time.nanoTimestamp();
+    i = 0;
+    while (i < N_ITER) {
+        // Compute the dot product
+        const z: i32 = dp.dot_product_2(i32, N, x, y);
+        try expect(z == -500000);
+        i += 1;
+    }
+    const end2 = std.time.nanoTimestamp();
+    std.debug.print("dot_product_2: PASSED in {d}μs on average ({d} iterations)\n", .{ @divFloor(end2 - start2, N_ITER * 1000), N_ITER });
 }
