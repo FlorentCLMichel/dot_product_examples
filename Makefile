@@ -1,25 +1,27 @@
-rust_tests:
+.PHONY: rust-tests rust-benchs rust-clippy rust-doc zig-build cpp-build cpp-benchs python clean
+
+rust-tests:
 	cd Rust && cargo test --offline
 
-rust_benchs:
+rust-benchs:
 	cd Rust && RUSTFLAGS="-C target-cpu=native" cargo bench --offline
 
-rust_clippy:
+rust-clippy:
 	cd Rust && cargo clippy --offline
 
-rust_doc:
+rust-doc:
 	cd Rust && cargo doc --offline
 
-zig_build:
+zig-build:
 	cd Zig && zig build --release=fast
 
-zig_run: zig_build
+zig-run: zig-build
 	cd Zig && ./zig-out/bin/bench_1
 
-cpp_build:
+cpp-build:
 	cd C++ && mkdir -p build && cd build && cmake .. && make
 
-cpp_benchs: cpp_build
+cpp-benchs: cpp-build
 	cd C++/build \
 		&& ./bench_1 && ./bench_2 && ./bench_3 && ./bench_4 && ./bench_5 \
 		&& ./bench_1 && ./bench_2 && ./bench_3 && ./bench_4 && ./bench_5
