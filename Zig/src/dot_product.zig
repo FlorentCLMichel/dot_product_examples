@@ -47,7 +47,7 @@ pub fn dot_product_2(comptime T: type, comptime lanes: usize, comptime N: usize,
         acc += vx * vy;
     }
 
-    var z: i32 = @reduce(.Add, acc);
+    var z: T = @reduce(.Add, acc);
 
     for (tail_start..N) |i| {
         z += x[i] * y[i];
@@ -57,18 +57,16 @@ pub fn dot_product_2(comptime T: type, comptime lanes: usize, comptime N: usize,
 }
 
 
-pub fn dot_product_3(comptime N: usize, x: []const i32, y: []const i32) i64 {
+pub fn dot_product_3(comptime T: type, comptime lanes: usize, comptime N: usize, x: []const T, y: []const T) T {
     std.debug.assert(x.len >= N);
     std.debug.assert(y.len >= N);
 
-    const lanes = 4;
-    const VecI32 = @Vector(lanes, i32);
-    const VecI64 = @Vector(lanes, i64);
+    const Vec = @Vector(lanes, T);
 
-    var acc0: VecI64 = @splat(0);
-    var acc1: VecI64 = @splat(0);
-    var acc2: VecI64 = @splat(0);
-    var acc3: VecI64 = @splat(0);
+    var acc0: Vec = @splat(0);
+    var acc1: Vec = @splat(0);
+    var acc2: Vec = @splat(0);
+    var acc3: Vec = @splat(0);
 
     const block = lanes * 4;
     const block_count = N / block;
@@ -77,23 +75,14 @@ pub fn dot_product_3(comptime N: usize, x: []const i32, y: []const i32) i64 {
     for (0..block_count) |b| {
         const base = b * block;
 
-        const x0_i32: VecI32 = x[base + 0..][0..lanes].*;
-        const y0_i32: VecI32 = y[base + 0..][0..lanes].*;
-        const x1_i32: VecI32 = x[base + 4..][0..lanes].*;
-        const y1_i32: VecI32 = y[base + 4..][0..lanes].*;
-        const x2_i32: VecI32 = x[base + 8..][0..lanes].*;
-        const y2_i32: VecI32 = y[base + 8..][0..lanes].*;
-        const x3_i32: VecI32 = x[base + 12..][0..lanes].*;
-        const y3_i32: VecI32 = y[base + 12..][0..lanes].*;
-
-        const x0: VecI64 = @as(VecI64, x0_i32);
-        const y0: VecI64 = @as(VecI64, y0_i32);
-        const x1: VecI64 = @as(VecI64, x1_i32);
-        const y1: VecI64 = @as(VecI64, y1_i32);
-        const x2: VecI64 = @as(VecI64, x2_i32);
-        const y2: VecI64 = @as(VecI64, y2_i32);
-        const x3: VecI64 = @as(VecI64, x3_i32);
-        const y3: VecI64 = @as(VecI64, y3_i32);
+        const x0: Vec = x[base..][0..lanes].*;
+        const y0: Vec = y[base..][0..lanes].*;
+        const x1: Vec = x[base..][lanes..2*lanes].*;
+        const y1: Vec = y[base..][lanes..2*lanes].*;
+        const x2: Vec = x[base..][2*lanes..3*lanes].*;
+        const y2: Vec = y[base..][2*lanes..3*lanes].*;
+        const x3: Vec = x[base..][3*lanes..4*lanes].*;
+        const y3: Vec = y[base..][3*lanes..4*lanes].*;
 
         acc0 += x0 * y0;
         acc1 += x1 * y1;
@@ -101,10 +90,10 @@ pub fn dot_product_3(comptime N: usize, x: []const i32, y: []const i32) i64 {
         acc3 += x3 * y3;
     }
 
-    var z: i64 = @reduce(.Add, acc0 + acc1 + acc2 + acc3);
+    var z: T = @reduce(.Add, acc0 + acc1 + acc2 + acc3);
 
     for (main_end..N) |i| {
-        z += @as(i64, x[i]) * @as(i64, y[i]);
+        z += x[i] * y[i];
     }
 
     return z;

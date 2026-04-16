@@ -60,19 +60,19 @@ pub fn main(init: std.process.Init) !void {
             "dot_product_2 ({d} lanes): PASSED in {d}μs on average ({d} iterations)\n",
             .{ lanes, @divFloor(elapsed.raw.toNanoseconds(), N_ITER * 1000), N_ITER },
         );
-    }
-    
-    start = std.Io.Clock.Timestamp.now(init.io, .awake);
-    i = 0;
-    while (i < N_ITER) : (i += 1) {
-        const z: i64 = dp.dot_product_3(N, x, y);
-        try expect(z == -500000);
-    }
-    end = std.Io.Clock.Timestamp.now(init.io, .awake);
-    elapsed = start.durationTo(end);
+        
+        start = std.Io.Clock.Timestamp.now(init.io, .awake);
+        i = 0;
+        while (i < N_ITER) : (i += 1) {
+            const z: i64 = dp.dot_product_3(i32, lanes, N, x, y);
+            try expect(z == -500000);
+        }
+        end = std.Io.Clock.Timestamp.now(init.io, .awake);
+        elapsed = start.durationTo(end);
 
-    std.debug.print(
-        "dot_product_3: PASSED in {d}μs on average ({d} iterations)\n",
-        .{ @divFloor(elapsed.raw.toNanoseconds(), N_ITER * 1000), N_ITER },
-    );
+        std.debug.print(
+            "dot_product_3 ({d} lanes): PASSED in {d}μs on average ({d} iterations)\n",
+            .{ lanes, @divFloor(elapsed.raw.toNanoseconds(), N_ITER * 1000), N_ITER },
+        );
+    }    
 }
