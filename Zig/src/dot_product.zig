@@ -3,9 +3,10 @@ const std = @import("std");
 // A simple dot product function
 //
 // Parameters:
+//  * T (comptime): type for the inputs and output
+//  * N (comptime): number of elements in each array
 //  * x (runtime): LHS
 //  * y (runtime): RHS
-//  * N (comptime): number of elements in each array
 pub fn dot_product_1(comptime T: type, comptime N: usize, x: []const T, y: []const T) T {
     std.debug.assert(x.len >= N);
     std.debug.assert(y.len >= N);
@@ -17,38 +18,22 @@ pub fn dot_product_1(comptime T: type, comptime N: usize, x: []const T, y: []con
     return z;
 }
 
-// A simple dot product function with vector operations
+
+// A simple dot product function with vector instructions
 //
 // Parameters:
+//  * T (comptime): type for the inputs and output
+//  * lanes (comptime): number of lanes to use
+//  * N (comptime): number of elements in each array
 //  * x (runtime): LHS
 //  * y (runtime): RHS
-//  * N (comptime): number of elements in each array
-pub fn dot_product_2(comptime T: type, comptime N: usize, x: []T, y: []T) T {
-    const lanes = 4;
-    const VecI32 = @Vector(lanes, i32);
-    var z: T = 0;
-    for (0 .. (N >> 2)) |i| {
-        const v0 = VecI32 { x[4*i], x[4*i+1], x[4*i+2], x[4*i+3] };
-        const v1 = VecI32 { y[4*i], y[4*i+1], y[4*i+2], y[4*i+3] };
-        const v2 = v0 * v1;
-        z += v2[0] + v2[1] + v2[2] + v2[3];
-    }
-    for (0 .. (N % 4)) |i| {
-        z += x[((N >> 2) << 2) + i] * y[((N >> 2) << 2) + i];
-    }
-    return z;
-}
-
-
-pub fn dot_product_3(comptime N: usize, x: []const i32, y: []const i32) i64 {
+pub fn dot_product_2(comptime T: type, comptime lanes: usize, comptime N: usize, x: []const T, y: []const T) T {
     std.debug.assert(x.len >= N);
     std.debug.assert(y.len >= N);
 
-    const lanes = 4;
-    const VecI32 = @Vector(lanes, i32);
-    const VecI64 = @Vector(lanes, i64);
+    const Vec = @Vector(lanes, T);
 
-    var acc: VecI64 = @splat(0);
+    var acc: Vec = @splat(0);
 
     const vec_count = N / lanes;
     const tail_start = vec_count * lanes;
@@ -56,26 +41,23 @@ pub fn dot_product_3(comptime N: usize, x: []const i32, y: []const i32) i64 {
     for (0..vec_count) |i| {
         const base = i * lanes;
 
-        const vx_i32: VecI32 = x[base..][0..lanes].*;
-        const vy_i32: VecI32 = y[base..][0..lanes].*;
-
-        const vx: VecI64 = @as(VecI64, vx_i32);
-        const vy: VecI64 = @as(VecI64, vy_i32);
+        const vx: Vec = x[base..][0..lanes].*;
+        const vy: Vec = y[base..][0..lanes].*;
 
         acc += vx * vy;
     }
 
-    var z: i64 = @reduce(.Add, acc);
+    var z: i32 = @reduce(.Add, acc);
 
     for (tail_start..N) |i| {
-        z += @as(i64, x[i]) * @as(i64, y[i]);
+        z += x[i] * y[i];
     }
 
     return z;
 }
 
 
-pub fn dot_product_4(comptime N: usize, x: []const i32, y: []const i32) i64 {
+pub fn dot_product_3(comptime N: usize, x: []const i32, y: []const i32) i64 {
     std.debug.assert(x.len >= N);
     std.debug.assert(y.len >= N);
 
