@@ -8,7 +8,7 @@ const N: usize = 1000000;
 // Nmber of iterations
 const N_ITER: usize = 10000;
 
-pub fn main() !void {
+pub fn main(init: std.process.Init) !void {
     // Define the allocator
     const allocator = std.heap.page_allocator;
 
@@ -22,19 +22,38 @@ pub fn main() !void {
     defer allocator.free(y);
     i = 0;
     while (i < N) {
-        x[i] = @intCast(i32, i);
-        y[i] = 1 - 2 * @intCast(i32, i % 2);
+        x[i] = @intCast(i);
+        y[i] = 1 - 2 * @as(i32, @intCast(i % 2));
         i += 1;
     }
 
-    const start = std.time.nanoTimestamp();
+    const start1 = std.Io.Clock.Timestamp.now(init.io, .awake);
     i = 0;
     while (i < N_ITER) {
         // Compute the dot product
-        var z: i32 = dp.dot_product_1(i32, N, x, y);
+        const z: i32 = dp.dot_product_1(i32, N, x, y);
         try expect(z == -500000);
         i += 1;
     }
-    const end = std.time.nanoTimestamp();
-    std.debug.print("PASSED in {d}μs on average ({d} iterations)\n", .{ @divExact(end - start, N_ITER * 1000), N_ITER });
+    const end1 = std.Io.Clock.Timestamp.now(init.io, .awake);
+    const elapsed1 = start1.durationTo(end1);
+
+    std.debug.print(
+        "dot_product_1: PASSED in {d}μs on average ({d} iterations)\n",
+        .{ @divFloor(elapsed1.raw.toNanoseconds(), N_ITER * 1000), N_ITER },
+    );
+        
+    const start2 = std.Io.Clock.Timestamp.now(init.io, .awake);
+    i = 0;
+    while (i < N_ITER) : (i += 1) {
+        const z: i32 = dp.dot_product_2(i32, N, x, y);
+        try expect(z == -500000);
+    }
+    const end2 = std.Io.Clock.Timestamp.now(init.io, .awake);
+    const elapsed2 = start2.durationTo(end2);
+
+    std.debug.print(
+        "dot_product_2: PASSED in {d}μs on average ({d} iterations)\n",
+        .{ @divFloor(elapsed2.raw.toNanoseconds(), N_ITER * 1000), N_ITER },
+    );
 }

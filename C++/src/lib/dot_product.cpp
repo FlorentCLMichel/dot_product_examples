@@ -30,7 +30,7 @@ void dot_product_2_inplace(
 }
 
 
-template<BasicArithmetic T, size_t N, size_t N_THREADS, size_t N_PER_THREAD = N / N_THREADS>
+template<BasicArithmetic T, size_t N, size_t N_THREADS, size_t N_PER_THREAD>
 T dot_product_2(const std::vector<T>& a, const std::vector<T>& b) {
 
     // create the thread pool

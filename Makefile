@@ -11,7 +11,7 @@ rust_doc:
 	cd Rust && cargo doc --offline
 
 zig_build:
-	cd Zig && zig build -Drelease-fast
+	cd Zig && zig build --release=fast
 
 zig_run: zig_build
 	cd Zig && ./zig-out/bin/bench_1
@@ -30,7 +30,8 @@ python:
 clean: 
 	rm -rf Rust/target
 	rm -f Rust/Cargo.lock
-	rm -rf Zig/zig-cache
+	rm -f Zig/build.zig.zon
+	rm -rf Zig/.zig-cache
 	rm -rf Zig/zig-out
 	rm -rf C++/build
 	rm -rf Python/__pycache__
