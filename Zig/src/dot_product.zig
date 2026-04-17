@@ -1,12 +1,12 @@
 const std = @import("std");
 
-// A simple dot product function
-//
-// Parameters:
-//  * T (comptime): type for the inputs and output
-//  * N (comptime): number of elements in each array
-//  * x (runtime): LHS
-//  * y (runtime): RHS
+/// A simple dot product function
+///
+/// Parameters:
+///  * T (comptime): type for the inputs and output
+///  * N (comptime): number of elements in each array
+///  * x (runtime): LHS
+///  * y (runtime): RHS
 pub fn dot_product_1(comptime T: type, comptime N: usize, x: []const T, y: []const T) T {
     std.debug.assert(x.len >= N);
     std.debug.assert(y.len >= N);
@@ -19,14 +19,14 @@ pub fn dot_product_1(comptime T: type, comptime N: usize, x: []const T, y: []con
 }
 
 
-// A simple dot product function with vector instructions
-//
-// Parameters:
-//  * T (comptime): type for the inputs and output
-//  * lanes (comptime): number of lanes to use
-//  * N (comptime): number of elements in each array
-//  * x (runtime): LHS
-//  * y (runtime): RHS
+/// A simple dot product function with vector instructions
+///
+/// Parameters:
+///  * T (comptime): type for the inputs and output
+///  * lanes (comptime): number of lanes to use
+///  * N (comptime): number of elements in each array
+///  * x (runtime): LHS
+///  * y (runtime): RHS
 pub fn dot_product_2(comptime T: type, comptime lanes: usize, comptime N: usize, x: []const T, y: []const T) T {
     std.debug.assert(x.len >= N);
     std.debug.assert(y.len >= N);
