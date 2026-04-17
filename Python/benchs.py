@@ -2,8 +2,8 @@ import dot_product
 import time
 import numpy as np
 
-N = 10000
-N_ITER = 1000000
+N = 100000000
+N_ITER = 100
 
 def benchmark(f):
     print("Benchmark: " + f.__name__)
