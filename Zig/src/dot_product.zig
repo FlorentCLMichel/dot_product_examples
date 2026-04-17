@@ -240,7 +240,11 @@ pub fn DotProductPool(
 
         pub fn init(self: *Self, io: std.Io) !void {
             self.* = Self{};
-
+        
+            if (comptime n_threads == 1) {
+                return;
+            }
+        
             var spawned: usize = 0;
             errdefer {
                 self.stop = true;
@@ -250,7 +254,7 @@ pub fn DotProductPool(
                     self.threads[spawned].join();
                 }
             }
-
+        
             for (0..n_threads) |tid| {
                 self.threads[tid] = try std.Thread.spawn(
                     .{},
@@ -264,37 +268,45 @@ pub fn DotProductPool(
                 spawned += 1;
             }
         }
-
+        
         pub fn deinit(self: *Self, io: std.Io) void {
+            if (comptime n_threads == 1) {
+                return;
+            }
+        
             self.mutex.lock(io) catch unreachable;
             self.stop = true;
             self.cv_work.broadcast(io);
             self.mutex.unlock(io);
-
+        
             for (0..n_threads) |tid| {
                 self.threads[tid].join();
             }
         }
-
+        
         pub fn dot(self: *Self, io: std.Io, x: []const T, y: []const T) !T {
             std.debug.assert(x.len == y.len);
-
+        
             if (x.len == 0) return 0;
-
+        
+            if (comptime n_threads == 1) {
+                return dot_product_chunk(T, lanes, x, y);
+            }
+        
             try self.mutex.lock(io);
             defer self.mutex.unlock(io);
-
+        
             self.x = x;
             self.y = y;
             self.finished = 0;
             self.generation += 1;
-
+        
             self.cv_work.broadcast(io);
-
+        
             while (self.finished < n_threads) {
                 try self.cv_done.wait(io, &self.mutex);
             }
-
+        
             var z: T = 0;
             for (0..n_threads) |tid| {
                 z += self.partials[tid];
