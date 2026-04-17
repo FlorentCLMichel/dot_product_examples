@@ -17,6 +17,11 @@ const n_threads_list = [_]usize{ 1, 2, 4, 8, 16 };
 pub fn main(init: std.process.Init) !void {
     // Define the allocator
     const allocator = std.heap.page_allocator;
+    
+    // io for threaded functions
+    var threaded: std.Io.Threaded = .init(allocator, .{ .environ = init.minimal.environ });
+    const io = threaded.io();
+    defer threaded.deinit();
 
     // Variable for the loops
     var i: usize = 0;
@@ -80,8 +85,8 @@ pub fn main(init: std.process.Init) !void {
             "dot_product_3 ({d} lanes): PASSED in {d}μs on average ({d} iterations)\n",
             .{ lanes, @divFloor(elapsed.raw.toNanoseconds(), N_ITER * 1000), N_ITER },
         );
-    }    
-    
+    }
+
     inline for (lanes_list) |lanes| {
         inline for (n_threads_list) |n_threads| {
             start = std.Io.Clock.Timestamp.now(init.io, .awake);
@@ -95,6 +100,23 @@ pub fn main(init: std.process.Init) !void {
 
             std.debug.print(
                 "dot_product_4 ({d} lanes, {d} threads): PASSED in {d}μs on average ({d} iterations)\n",
+                .{ lanes, n_threads, @divFloor(elapsed.raw.toNanoseconds(), N_ITER * 1000), N_ITER },
+            );
+            
+            var pool: dp.DotProductPool(i32, lanes, n_threads) = undefined;
+            try pool.init(io);
+            defer pool.deinit(io);
+            start = std.Io.Clock.Timestamp.now(init.io, .awake);
+            i = 0;
+            while (i < N_ITER) : (i += 1) {
+                const z: i32 = try pool.dot(io, x, y);
+                try expect(z == expected);
+            }
+            end = std.Io.Clock.Timestamp.now(init.io, .awake);
+            elapsed = start.durationTo(end);
+
+            std.debug.print(
+                "DotProductPool.dot ({d} lanes, {d} threads): PASSED in {d}μs on average ({d} iterations)\n",
                 .{ lanes, n_threads, @divFloor(elapsed.raw.toNanoseconds(), N_ITER * 1000), N_ITER },
             );
         }

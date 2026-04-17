@@ -205,3 +205,146 @@ pub fn dot_product_4(
 
     return z;
 }
+
+
+pub fn DotProductPool(
+    comptime T: type,
+    comptime lanes: usize,
+    comptime n_threads: usize,
+) type {
+    comptime std.debug.assert(lanes > 0);
+    comptime std.debug.assert(n_threads > 0);
+
+    return struct {
+        const Self = @This();
+
+        const WorkerCtx = struct {
+            pool: *Self,
+            tid: usize,
+            io: std.Io,
+        };
+
+        mutex: std.Io.Mutex = .init,
+        cv_work: std.Io.Condition = .init,
+        cv_done: std.Io.Condition = .init,
+
+        threads: [n_threads]std.Thread = undefined,
+        partials: [n_threads]T = [_]T{@as(T, 0)} ** n_threads,
+
+        x: []const T = &.{},
+        y: []const T = &.{},
+
+        generation: usize = 0,
+        finished: usize = 0,
+        stop: bool = false,
+
+        pub fn init(self: *Self, io: std.Io) !void {
+            self.* = Self{};
+
+            var spawned: usize = 0;
+            errdefer {
+                self.stop = true;
+                self.cv_work.broadcast(io);
+                while (spawned > 0) {
+                    spawned -= 1;
+                    self.threads[spawned].join();
+                }
+            }
+
+            for (0..n_threads) |tid| {
+                self.threads[tid] = try std.Thread.spawn(
+                    .{},
+                    workerMain,
+                    .{WorkerCtx{
+                        .pool = self,
+                        .tid = tid,
+                        .io = io,
+                    }},
+                );
+                spawned += 1;
+            }
+        }
+
+        pub fn deinit(self: *Self, io: std.Io) void {
+            self.mutex.lock(io) catch unreachable;
+            self.stop = true;
+            self.cv_work.broadcast(io);
+            self.mutex.unlock(io);
+
+            for (0..n_threads) |tid| {
+                self.threads[tid].join();
+            }
+        }
+
+        pub fn dot(self: *Self, io: std.Io, x: []const T, y: []const T) !T {
+            std.debug.assert(x.len == y.len);
+
+            if (x.len == 0) return 0;
+
+            try self.mutex.lock(io);
+            defer self.mutex.unlock(io);
+
+            self.x = x;
+            self.y = y;
+            self.finished = 0;
+            self.generation += 1;
+
+            self.cv_work.broadcast(io);
+
+            while (self.finished < n_threads) {
+                try self.cv_done.wait(io, &self.mutex);
+            }
+
+            var z: T = 0;
+            for (0..n_threads) |tid| {
+                z += self.partials[tid];
+            }
+            return z;
+        }
+
+        fn workerMain(ctx: WorkerCtx) !void {
+            const self = ctx.pool;
+            const tid = ctx.tid;
+            const io = ctx.io;
+
+            var seen_generation: usize = 0;
+
+            while (true) {
+                try self.mutex.lock(io);
+
+                while (!self.stop and self.generation == seen_generation) {
+                    try self.cv_work.wait(io, &self.mutex);
+                }
+
+                if (self.stop) {
+                    self.mutex.unlock(io);
+                    return;
+                }
+
+                const my_generation = self.generation;
+                const x = self.x;
+                const y = self.y;
+
+                const n = x.len;
+                const chunk_size = std.math.divCeil(usize, n, n_threads) catch unreachable;
+                const start = @min(tid * chunk_size, n);
+                const end = @min(start + chunk_size, n);
+
+                self.mutex.unlock(io);
+
+                const partial: T = dot_product_chunk(T, lanes, x[start..end], y[start..end]);
+
+                try self.mutex.lock(io);
+                self.partials[tid] = partial;
+                self.finished += 1;
+                seen_generation = my_generation;
+
+                if (self.finished == n_threads) {
+                    self.cv_done.signal(io);
+                }
+
+                self.mutex.unlock(io);
+            }
+        }
+    };
+}
