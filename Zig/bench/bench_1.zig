@@ -3,13 +3,16 @@ const expect = std.testing.expect;
 const dp = @import("dot_product");
 
 // Number of elements
-const N: usize = 1000000;
+const N: usize = 100000000;
 
 // Number of iterations
-const N_ITER: usize = 10000;
+const N_ITER: usize = 100;
 
 // Numbers of lanes to try for vector operations
 const lanes_list = [_]usize{ 1, 2, 4, 8, 16 }; 
+
+// Numbers of threads to try for multi-threaded functios
+const n_threads_list = [_]usize{ 1, 2, 4, 8, 16 }; 
 
 pub fn main(init: std.process.Init) !void {
     // Define the allocator
@@ -30,12 +33,15 @@ pub fn main(init: std.process.Init) !void {
         i += 1;
     }
 
+    // Expected output
+    const expected: i32 = -50000000;
+
     var start = std.Io.Clock.Timestamp.now(init.io, .awake);
     i = 0;
     while (i < N_ITER) {
         // Compute the dot product
         const z: i32 = dp.dot_product_1(i32, N, x, y);
-        try expect(z == -500000);
+        try expect(z == expected);
         i += 1;
     }
     var end = std.Io.Clock.Timestamp.now(init.io, .awake);
@@ -50,8 +56,8 @@ pub fn main(init: std.process.Init) !void {
         start = std.Io.Clock.Timestamp.now(init.io, .awake);
         i = 0;
         while (i < N_ITER) : (i += 1) {
-            const z: i64 = dp.dot_product_2(i32, lanes, N, x, y);
-            try expect(z == -500000);
+            const z: i32 = dp.dot_product_2(i32, lanes, N, x, y);
+            try expect(z == expected);
         }
         end = std.Io.Clock.Timestamp.now(init.io, .awake);
         elapsed = start.durationTo(end);
@@ -64,8 +70,8 @@ pub fn main(init: std.process.Init) !void {
         start = std.Io.Clock.Timestamp.now(init.io, .awake);
         i = 0;
         while (i < N_ITER) : (i += 1) {
-            const z: i64 = dp.dot_product_3(i32, lanes, N, x, y);
-            try expect(z == -500000);
+            const z: i32 = dp.dot_product_3(i32, lanes, N, x, y);
+            try expect(z == expected);
         }
         end = std.Io.Clock.Timestamp.now(init.io, .awake);
         elapsed = start.durationTo(end);
@@ -75,4 +81,22 @@ pub fn main(init: std.process.Init) !void {
             .{ lanes, @divFloor(elapsed.raw.toNanoseconds(), N_ITER * 1000), N_ITER },
         );
     }    
+    
+    inline for (lanes_list) |lanes| {
+        inline for (n_threads_list) |n_threads| {
+            start = std.Io.Clock.Timestamp.now(init.io, .awake);
+            i = 0;
+            while (i < N_ITER) : (i += 1) {
+                const z: i32 = try dp.dot_product_4(i32, lanes, n_threads, N, x, y);
+                try expect(z == expected);
+            }
+            end = std.Io.Clock.Timestamp.now(init.io, .awake);
+            elapsed = start.durationTo(end);
+
+            std.debug.print(
+                "dot_product_4 ({d} lanes, {d} threads): PASSED in {d}μs on average ({d} iterations)\n",
+                .{ lanes, n_threads, @divFloor(elapsed.raw.toNanoseconds(), N_ITER * 1000), N_ITER },
+            );
+        }
+    }
 }

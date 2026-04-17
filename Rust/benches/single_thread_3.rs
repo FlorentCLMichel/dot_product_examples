@@ -1,7 +1,7 @@
 use criterion::{criterion_group, criterion_main, Criterion};
 use dot_product::single_thread::*;
     
-const N: usize = 1000000; // number of elements
+const N: usize = 100000000; // number of elements
 
 fn criterion_benchmark(c: &mut Criterion) 
 {
@@ -16,7 +16,7 @@ fn criterion_benchmark(c: &mut Criterion)
         c.bench_function("dot_product_single_thread_1", |b| b.iter(|| z = dot_prod_3(&x, &y, N)));
 
         // check the result
-        assert_eq!(-500000, z);
+        assert_eq!(-50000000, z);
     }
 }
 

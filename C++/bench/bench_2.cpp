@@ -6,7 +6,7 @@
 constexpr size_t N = DOT_PRODUCT_SIZE;
 
 // Number of iterations
-const unsigned int N_ITER = 10000;
+const unsigned int N_ITER = 100;
 
 int main() 
 {
@@ -21,7 +21,7 @@ int main()
     auto start = std::chrono::high_resolution_clock::now();
     for (size_t i = 0; i < N_ITER; i++) {
         const int z = dot_product_2<int, N, DOT_PRODUCT_N_THREADS>(x, y);
-        if (z != -500000) {
+        if (z != -50000000) {
             std::cout << "FAILED" << std::endl;
             return 1;
         }

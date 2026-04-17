@@ -2,8 +2,8 @@ import dot_product
 import time
 import numpy as np
 
-N = 1000000
-N_ITER = 10000
+N = 10000
+N_ITER = 1000000
 
 def benchmark(f):
     print("Benchmark: " + f.__name__)
@@ -13,7 +13,7 @@ def benchmark(f):
     start = time.time()
     for _ in range(N_ITER):
         c = f(a, b)
-        if c != -500000:
+        if c != -50000000:
             print("FAILED")
             exit()
     end = time.time()
