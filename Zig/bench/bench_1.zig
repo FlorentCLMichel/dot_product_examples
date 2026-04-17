@@ -85,10 +85,11 @@ pub fn main(init: std.process.Init) !void {
             "dot_product_3 ({d} lanes): PASSED in {d}μs on average ({d} iterations)\n",
             .{ lanes, @divFloor(elapsed.raw.toNanoseconds(), N_ITER * 1000), N_ITER },
         );
-    }
 
-    inline for (lanes_list) |lanes| {
+        // Multi-threaded versions
         inline for (n_threads_list) |n_threads| {
+            
+            // Spawn/Join version
             start = std.Io.Clock.Timestamp.now(init.io, .awake);
             i = 0;
             while (i < N_ITER) : (i += 1) {
@@ -103,22 +104,25 @@ pub fn main(init: std.process.Init) !void {
                 .{ lanes, n_threads, @divFloor(elapsed.raw.toNanoseconds(), N_ITER * 1000), N_ITER },
             );
             
-            var pool: dp.DotProductPool(i32, lanes, n_threads) = undefined;
-            try pool.init(io);
-            defer pool.deinit(io);
-            start = std.Io.Clock.Timestamp.now(init.io, .awake);
-            i = 0;
-            while (i < N_ITER) : (i += 1) {
-                const z: i32 = try pool.dot(io, x, y);
-                try expect(z == expected);
-            }
-            end = std.Io.Clock.Timestamp.now(init.io, .awake);
-            elapsed = start.durationTo(end);
+            // Pooled version
+            {
+                var pool: dp.DotProductPool(i32, lanes, n_threads) = undefined;
+                try pool.init(io);
+                defer pool.deinit(io);
+                start = std.Io.Clock.Timestamp.now(init.io, .awake);
+                i = 0;
+                while (i < N_ITER) : (i += 1) {
+                    const z: i32 = try pool.dot(io, x, y);
+                    try expect(z == expected);
+                }
+                end = std.Io.Clock.Timestamp.now(init.io, .awake);
+                elapsed = start.durationTo(end);
 
-            std.debug.print(
-                "DotProductPool.dot ({d} lanes, {d} threads): PASSED in {d}μs on average ({d} iterations)\n",
-                .{ lanes, n_threads, @divFloor(elapsed.raw.toNanoseconds(), N_ITER * 1000), N_ITER },
-            );
+                std.debug.print(
+                    "DotProductPool.dot ({d} lanes, {d} threads): PASSED in {d}μs on average ({d} iterations)\n",
+                    .{ lanes, n_threads, @divFloor(elapsed.raw.toNanoseconds(), N_ITER * 1000), N_ITER },
+                );
+            }
         }
     }
 }
